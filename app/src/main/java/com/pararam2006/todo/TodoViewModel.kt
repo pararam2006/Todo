@@ -11,16 +11,17 @@ import kotlinx.serialization.json.Json
 
 class TodoViewModel: ViewModel() {
     private val _todoList = mutableStateListOf<Todo>()
-
     val todoList: MutableList<Todo> get() = _todoList
 
     private val _input = mutableStateOf("")
     val input: MutableState<String> get() = _input
 
     fun addTodo() {
-        val newTodo = Todo(text = _input.value)
-        _todoList.add(newTodo)
-        _input.value = ""
+        if (_input.value.trim() != "") {
+            val newTodo = Todo(text = _input.value.trim())
+            _todoList.add(newTodo)
+            _input.value = ""
+        }
     }
 
     fun changeTodoStatus(id: String, newState: Boolean) {
@@ -50,7 +51,7 @@ class TodoViewModel: ViewModel() {
 
         if (prefsJson == null) {
             //Если ничего нет, добавляем дефолтное значение
-            _todoList.add(Todo("Дефолтная задача"))
+            _todoList.add(Todo("Создайте задачу, написав что-то снизу и нажав кнопку:)"))
         } else {
             //Если там что-то, есть парсим и подгружаем в _todoList
             val savedTodos = Json.decodeFromString<Collection<Todo>>(prefsJson)
