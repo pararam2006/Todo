@@ -1,11 +1,9 @@
 package com.pararam2006.todo
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,13 +21,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,12 +36,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pararam2006.todo.ui.theme.ToDoTheme
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(vm: TodoViewModel) {
-    val todoList = vm.todoList
-    val input = remember { vm.input }
+fun MainScreen(
+    input: String,
+    todoList: List<Todo>,
+    onInputChange: (String) -> Unit,
+    onAddTodo: () -> Unit,
+    onChangeTodoStatus: (String, Boolean) -> Unit,
+    onDeleteTodo: (String) -> Unit
+) {
 
     ToDoTheme {
         Scaffold(
@@ -56,32 +55,30 @@ fun MainScreen(vm: TodoViewModel) {
                 BottomAppBar(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.weight(1F, true))
                     TextField(
-                        value = input.value,
-                        onValueChange = { newText -> input.value = newText },
+                        value = input,
+                        onValueChange = onInputChange,
                         placeholder = { Text("Напишите задачу") },
                         singleLine = true,
                         modifier = Modifier.width(300.dp)
                     )
                     Spacer(Modifier.width(10.dp))
-                    FloatingActionButton(
-                        onClick = {
-                            vm.addTodo()
-                        }
-                    ) { Icon(imageVector = Icons.Filled.Add, contentDescription = "") }
+                    FloatingActionButton(onClick = onAddTodo) {
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = "")
+                    }
                     Spacer(Modifier.weight(1F, true))
                 }
             },
             content = {
-
                 Box(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(it),
                     contentAlignment = Alignment.Center
                 ) {
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxWidth(0.9F)
-                            .fillMaxHeight(),
+                            .fillMaxWidth(0.9F),
+//                            .fillMaxHeight(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -108,18 +105,19 @@ fun MainScreen(vm: TodoViewModel) {
                                     },
                                     modifier = Modifier.weight(1F)
                                 )
-                                CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-                                    Checkbox(
-                                        modifier = Modifier.padding(start = 10.dp),
-                                        checked = item.isCompleted,
-                                        onCheckedChange = { newState ->
-                                            vm.changeTodoStatus(item.id, newState)
-                                        }
-                                    )
-                                }
+                                Checkbox(
+                                    modifier = Modifier.padding(start = 10.dp),
+                                    checked = item.isCompleted,
+                                    onCheckedChange = { newState ->
+                                        onChangeTodoStatus(
+                                            item.id,
+                                            newState
+                                        )
+                                    }
+                                )
                                 IconButton(
                                     onClick = {
-                                        vm.deleteTodo(item.id)
+                                        onDeleteTodo(item.id)
                                     },
                                 ) {
                                     Icon(
@@ -136,14 +134,21 @@ fun MainScreen(vm: TodoViewModel) {
     }
 }
 
-@Preview(showSystemUi = true, device = "spec:width=411dp,height=891dp,dpi=420,isRound=false,chinSize=0dp,orientation=landscape")
-@Composable
-fun HorizontalPreview() {
-    MainScreen(vm = TodoViewModel())
-}
-
+@Preview(
+    showSystemUi = true,
+    device = "spec:width=411dp,height=891dp,dpi=420,isRound=false,chinSize=0dp,orientation=landscape"
+)
 @Preview
 @Composable
-fun VerticalPreview() {
-    MainScreen(vm = TodoViewModel())
+fun MainScreenPreview() {
+    ToDoTheme {
+        MainScreen(
+            input = "",
+            todoList = emptyList(),
+            onInputChange = {},
+            onAddTodo = {},
+            onChangeTodoStatus = { _, _ -> },
+            onDeleteTodo = {}
+        )
+    }
 }

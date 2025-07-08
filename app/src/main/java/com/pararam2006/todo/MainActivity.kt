@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import com.pararam2006.todo.ui.theme.ToDoTheme
 
 class MainActivity : ComponentActivity() {
     private val _todoViewModel: TodoViewModel by viewModels()
@@ -14,7 +15,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainScreen(_todoViewModel)
+            ToDoTheme {
+                MainScreen(
+                    input = _todoViewModel.input,
+                    todoList = _todoViewModel.todoList,
+                    onInputChange = _todoViewModel::changeInput,
+                    onAddTodo = _todoViewModel::addTodo,
+                    onChangeTodoStatus = _todoViewModel::changeTodoStatus,
+                    onDeleteTodo = _todoViewModel::deleteTodo
+                )
+            }
         }
     }
 
