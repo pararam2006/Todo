@@ -15,9 +15,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.pararam2006.todo.R
 import com.pararam2006.todo.ui.theme.ToDoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,8 +42,8 @@ fun TodoEditingDialog(
                 ) {
                     Text(
                         text = "Отредактируйте текст задачи", modifier = Modifier.padding(
-                            top = 10.dp,
-                            bottom = 10.dp
+                            top = dimensionResource(R.dimen.padding10),
+                            bottom = dimensionResource(R.dimen.padding10),
                         )
                     )
 

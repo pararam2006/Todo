@@ -15,9 +15,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.pararam2006.todo.R
 import com.pararam2006.todo.ui.theme.ToDoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,8 +49,8 @@ fun TodoCreationDialog(
                         Text(
                             "Создать новую задачу",
                             modifier = Modifier.padding(
-                                bottom = 10.dp,
-                                top = 10.dp
+                                top = dimensionResource(R.dimen.padding10),
+                                bottom = dimensionResource(R.dimen.padding10),
                             )
                         )
 
@@ -68,7 +69,7 @@ fun TodoCreationDialog(
                             singleLine = false,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp)
+                                .padding(top = dimensionResource(R.dimen.padding8))
                         )
 
                         Row(
@@ -78,15 +79,15 @@ fun TodoCreationDialog(
                             TextButton(
                                 onClick = onDismissPressed,
                                 modifier = Modifier.padding(
-                                    start = 8.dp,
-                                    end = 8.dp
+                                    start = dimensionResource(R.dimen.padding8),
+                                    end = dimensionResource(R.dimen.padding8)
                                 )
                             ) { Text("Отмена") }
                             TextButton(
                                 onClick = onConfirmPressed,
                                 modifier = Modifier.padding(
-                                    start = 8.dp,
-                                    end = 8.dp
+                                    start = dimensionResource(R.dimen.padding8),
+                                    end = dimensionResource(R.dimen.padding8)
                                 )
                             ) { Text("Создать") }
                         }

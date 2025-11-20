@@ -1,73 +1,65 @@
 package com.pararam2006.todo.data
 
 import android.content.Context
-import androidx.compose.runtime.mutableStateListOf
 import androidx.core.content.edit
 import com.pararam2006.todo.domain.TodoDto
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class TodoRepository(
-    context: Context
-) {
-    val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
-    var todoList = mutableStateListOf<TodoDto>()
-        private set
+class TodoRepository(context: Context) {
+
+    private val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+
+    private val _todoList: MutableList<TodoDto> = mutableListOf()
+    val todoList: List<TodoDto>
+        get() = _todoList.toList()
 
     init {
-        loadTodos()
+        _todoList.addAll(loadTodosInternal())
     }
 
-    fun changeTodoStatus(id: String, newState: Boolean) {
-        val index = todoList.indexOfFirst { it.id == id }
-        if (index != -1) {
-            todoList[index] = todoList[index].copy(isCompleted = newState)
+    private fun loadTodosInternal(): List<TodoDto> {
+        val json = prefs.getString("todoList", null)
+        return if (json.isNullOrEmpty()) {
+            listOf(TodoDto("Первая задача - создать задачу ;)"))
+        } else {
+            Json.decodeFromString(json)
         }
-        saveTodos()
     }
+
+    fun loadTodos(): List<TodoDto> = _todoList.toList()
 
     fun addTodo(text: String) {
-        if (text.trim() != "") {
-            val newTodo = TodoDto(text = text.trim())
-            todoList.add(newTodo)
+        val trimmed = text.trim()
+        if (trimmed.isNotEmpty()) {
+            _todoList.add(TodoDto(text = trimmed))
+            saveTodos()
         }
-        saveTodos()
     }
 
     fun deleteTodo(id: String) {
-        todoList.removeIf { it.id == id }
+        _todoList.removeIf { it.id == id }
         saveTodos()
     }
 
-    fun saveTodos() {
-        val list = todoList.toList()
-        val jsonTodoList = Json.Default.encodeToString(list)
-        prefs?.edit { putString("todoList", jsonTodoList) }
-    }
-
-    fun loadTodos() {
-        val prefsJson = prefs?.getString("todoList", "")
-        todoList.clear()
-        if (prefsJson == "") {
-            todoList.add(TodoDto("Первая задача - создать задачу ;)"))
-        } else {
-            val savedTodos = Json.Default.decodeFromString<Collection<TodoDto>>(prefsJson ?: "")
-            todoList.addAll(savedTodos)
+    fun changeTodoStatus(id: String, newState: Boolean) {
+        val index = _todoList.indexOfFirst { it.id == id }
+        if (index != -1) {
+            _todoList[index] = _todoList[index].copy(isCompleted = newState)
+            saveTodos()
         }
     }
 
     fun editTodo(id: String, newText: String) {
-        val index = todoList.indexOfFirst { it.id == id }
+        val index = _todoList.indexOfFirst { it.id == id }
         if (index != -1) {
-            todoList[index] = todoList[index].copy(text = newText)
+            _todoList[index] = _todoList[index].copy(text = newText)
+            saveTodos()
         }
-        saveTodos()
     }
 
-    fun editTodoWithoutSave(id: String, newText: String) {
-        val index = todoList.indexOfFirst { it.id == id }
-        if (index != -1) {
-            todoList[index] = todoList[index].copy(text = newText)
-        }
+    fun saveTodos() {
+        val json = Json.encodeToString(_todoList.toList())
+        prefs.edit { putString("todoList", json) }
     }
 }

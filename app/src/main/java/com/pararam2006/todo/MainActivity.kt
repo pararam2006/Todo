@@ -17,23 +17,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             ToDoTheme {
                 val todoViewModel: MainScreenViewModel = koinViewModel()
-
+                val uiState = todoViewModel.uiState
                 MainScreen(
-                    input = todoViewModel.input,
-                    todoList = todoViewModel.todoList,
-                    onInputChange = todoViewModel::changeInput,
-                    onAddTodo = todoViewModel::addTodo,
-                    onChangeTodoStatus = todoViewModel::changeTodoStatus,
-                    onDeleteTodo = todoViewModel::deleteTodo,
-                    onEditTodo = todoViewModel::editTodo,
-                    onSaveTodo = todoViewModel::saveTodos,
-                    redactingInput = todoViewModel.redactingInput,
-                    onSelectTodo = todoViewModel::selectTodo,
-                    onChangeRedactingInput = todoViewModel::changeRedactingInput,
-                    onRevertEditing = todoViewModel::revertEditing,
-                    onShowDialog = todoViewModel::showDialog,
-                    onHideDialog = todoViewModel::hideDialog,
-                    isDialogShowed = todoViewModel.isDialogShowed,
+                    uiState = uiState,
+                    actions = todoViewModel,
                 )
             }
         }
