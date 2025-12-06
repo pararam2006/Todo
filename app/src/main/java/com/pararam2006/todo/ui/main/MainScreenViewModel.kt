@@ -4,14 +4,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.pararam2006.todo.data.TodoRepository
+import com.pararam2006.todo.domain.repository.TodoRepository
 
 class MainScreenViewModel(
     private val todoRepository: TodoRepository
 ) : ViewModel(), MainScreenActions {
     var uiState by mutableStateOf(
         MainScreenUiState(
-            todoList = todoRepository.loadTodos()
+            todoList = todoRepository.getTodos()
         )
     )
         private set
@@ -63,25 +63,27 @@ class MainScreenViewModel(
 
     fun changeTodoStatus(id: String, newState: Boolean) {
         todoRepository.changeTodoStatus(id, newState)
-        uiState = uiState.copy(todoList = todoRepository.todoList.toList())
+        uiState = uiState.copy(
+            todoList = todoRepository.getTodos()
+        )
     }
 
     fun addTodo(text: String) {
         todoRepository.addTodo(text)
         uiState = uiState.copy(
-            todoList = todoRepository.todoList.toList(),
+            todoList = todoRepository.getTodos(),
             input = ""
         )
     }
 
     fun deleteTodo(id: String) {
         todoRepository.deleteTodo(id)
-        uiState = uiState.copy(todoList = todoRepository.todoList.toList())
+        uiState = uiState.copy(
+            todoList = todoRepository.getTodos()
+        )
     }
 
-    fun saveTodos() {
-        todoRepository.saveTodos()
-    }
+    fun saveTodos() = todoRepository.saveTodos()
 
     fun editTodo() {
         if (uiState.selectedIndex != -1) {
@@ -91,9 +93,8 @@ class MainScreenViewModel(
             if (newText.isNotEmpty()) {
                 todoRepository.editTodo(selectedTodo.id, newText)
 
-                // Обновляем UI после редактирования
                 uiState = uiState.copy(
-                    todoList = todoRepository.todoList.toList(),
+                    todoList = todoRepository.getTodos(),
                     selectedText = newText
                 )
             }

@@ -1,6 +1,6 @@
 package com.pararam2006.todo.ui.main
 
-import com.pararam2006.todo.domain.TodoDto
+import com.pararam2006.todo.domain.model.TodoDto
 
 data class MainScreenUiState(
     val todoList: List<TodoDto> = emptyList(),

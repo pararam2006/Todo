@@ -1,9 +1,9 @@
 package com.pararam2006.todo.di
 
-import com.pararam2006.todo.data.TodoRepository
-import org.koin.core.module.dsl.singleOf
+import com.pararam2006.todo.data.TodoRepositoryImpl
+import com.pararam2006.todo.domain.repository.TodoRepository
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    singleOf(::TodoRepository)
+    single<TodoRepository> { TodoRepositoryImpl(get()) }
 }

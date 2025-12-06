@@ -1,4 +1,4 @@
-package com.pararam2006.todo.domain
+package com.pararam2006.todo.domain.model
 
 import kotlinx.serialization.Serializable
 import java.util.UUID

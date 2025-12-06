@@ -2,23 +2,22 @@ package com.pararam2006.todo.data
 
 import android.content.Context
 import androidx.core.content.edit
-import com.pararam2006.todo.domain.TodoDto
+import com.pararam2006.todo.domain.model.TodoDto
+import com.pararam2006.todo.domain.repository.TodoRepository
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class TodoRepository(context: Context) {
+class TodoRepositoryImpl(context: Context) : TodoRepository {
 
     private val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
 
     private val _todoList: MutableList<TodoDto> = mutableListOf()
-    val todoList: List<TodoDto>
-        get() = _todoList.toList()
 
     init {
-        _todoList.addAll(loadTodosInternal())
+        _todoList.addAll(getTodosFromPrefs())
     }
 
-    private fun loadTodosInternal(): List<TodoDto> {
+    private fun getTodosFromPrefs(): List<TodoDto> {
         val json = prefs.getString("todoList", null)
         return if (json.isNullOrEmpty()) {
             listOf(TodoDto("Первая задача - создать задачу ;)"))
@@ -27,22 +26,27 @@ class TodoRepository(context: Context) {
         }
     }
 
-    fun loadTodos(): List<TodoDto> = _todoList.toList()
+    override fun getTodos(): List<TodoDto> = _todoList.toList()
 
-    fun addTodo(text: String) {
+    override fun addTodo(text: String, id: String) {
         val trimmed = text.trim()
         if (trimmed.isNotEmpty()) {
-            _todoList.add(TodoDto(text = trimmed))
+            _todoList.add(
+                TodoDto(
+                    text = trimmed,
+                    id = id
+                )
+            )
             saveTodos()
         }
     }
 
-    fun deleteTodo(id: String) {
+    override fun deleteTodo(id: String) {
         _todoList.removeIf { it.id == id }
         saveTodos()
     }
 
-    fun changeTodoStatus(id: String, newState: Boolean) {
+    override fun changeTodoStatus(id: String, newState: Boolean) {
         val index = _todoList.indexOfFirst { it.id == id }
         if (index != -1) {
             _todoList[index] = _todoList[index].copy(isCompleted = newState)
@@ -50,7 +54,7 @@ class TodoRepository(context: Context) {
         }
     }
 
-    fun editTodo(id: String, newText: String) {
+    override fun editTodo(id: String, newText: String) {
         val index = _todoList.indexOfFirst { it.id == id }
         if (index != -1) {
             _todoList[index] = _todoList[index].copy(text = newText)
@@ -58,7 +62,7 @@ class TodoRepository(context: Context) {
         }
     }
 
-    fun saveTodos() {
+    override fun saveTodos() {
         val json = Json.encodeToString(_todoList.toList())
         prefs.edit { putString("todoList", json) }
     }
